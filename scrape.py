@@ -16,7 +16,9 @@ csvfile = open('articles.csv', 'w', newline='')
 if csvfile is None:
     raise IOError
 
-out = csv.writer(csvfile, delimiter=';', quoting=csv.QUOTE_ALL)
+out = csv.writer(csvfile, delimiter=';', quoting=csv.QUOTE_ALL, strict=True)
+    
+out.writerow(["<url>", "<publish_date>", "<location>", "<title>", "<clean_text>"])
     
 print("\a\n")
 
@@ -53,7 +55,7 @@ for i in range(0, len(d)):
                 child.decompose()
             
     #print(text_html.get_text())
-    out.writerow([d[i], meta_publish, meta_location, title, garbage, text_html.get_text()])
+    out.writerow([d[i], meta_publish, meta_location, title, text_html.get_text()])
 
 csvfile.close()
 
