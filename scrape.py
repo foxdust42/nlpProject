@@ -2,6 +2,7 @@ import json
 import requests as r
 import bs4
 import csv 
+import sys
 #from bs4 import BeautifulSoup
 
 with open("urls.json", "r") as f:
@@ -38,24 +39,40 @@ for i in range(0, len(d)):
     soup = bs4.BeautifulSoup(req.text, 'html.parser')
 
     title = soup.h2.text
-    meta_location = soup.find("span", class_ = "icon fa fa-map-marker").parent.contents[1]
-    meta_publish = soup.find("span", class_ = "icon qb-clock").parent.contents[1]
+    tmp = soup.find("span", class_ = "icon fa fa-map-marker")
+    if tmp is not None: 
+        meta_location = tmp.parent.contents[1]
+    else:
+        meta_location = None
+        
+    tmp = soup.find("span", class_ = "icon qb-clock") 
+    if tmp is not None:
+        meta_publish = tmp.parent.contents[1]
+    else:
+        meta_publish = None
     #print(meta_publish)
 
-    text_html = soup.find(class_ = "text").findChild("div")
+    try:
+        text_html = soup.find(class_ = "text").findChild("div")
+    except AttributeError:
+        print(sys.exc_info())
+        print(d[i])
+        #sys.exit(-1)
+        continue
 
     garbage = text_html.__str__()
 
-    children = text_html.findChildren("p", recursive=False)
+    children = text_html.findChildren(recursive=False)
 
     for child in children:
         if child.find("a") is not None:
             a ="".join([t for t in child.contents if type(t)==bs4.element.NavigableString])
-            if a in ["Read more: ", "Read: ", ""]:
+            if a in ["Read more: ", "Read: ", "", "Also Read- "]:
                 child.decompose()
             
     #print(text_html.get_text())
     out.writerow([d[i], meta_publish, meta_location, title, text_html.get_text()])
+    print(i)
 
 csvfile.close()
 
