@@ -12,7 +12,7 @@ while len(urls_total) <= 520:
     urls = []
     while True:   
         r = requests.get(f'https://www.unb.com.bd/api/tag-news?tag_id=54&item={iteration}')
-        print(f'https://www.unb.com.bd/api/tag-news?tag_id=54&item={iteration}')
+        #print(f'https://www.unb.com.bd/api/tag-news?tag_id=54&item={iteration}')
         if r.status_code != 200:
             raise EOFError
         if len(r.text) != 0:
@@ -23,16 +23,16 @@ while len(urls_total) <= 520:
         tmp = re.search(".*category.*", m)
         if tmp is not None:
             url = re.split("\"", tmp.string)
-            print(url)
+            #print(url)
             try:
                 if (re.match("^https.*", url[0]) is not None):
                     url = url[0]
                 else:
                     url = url[1]
             except:
-                print(sys.exc_info())
-                print(url)
-                print(tmp)
+                #print(sys.exc_info())
+                #print(url)
+                #print(tmp)
                 sys.exit(-1)
             url = url.replace("\\", "")
             # if len(urls) == 0:
