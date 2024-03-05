@@ -8,6 +8,18 @@ import sys
 ## There is little point in working on this until I get answers 
 
 '''
+Absent answers the following assumptions are made:
+• follow the admin. implication chain
+• resolve relative time phrases (i.e. today, yesterday, etc.) wrt to post metadata
+• accident_datetime_from_url is just article metadata
+• vechicle primacy follows order of apperance in text
+• the "any_more_..." field is a list
+Currenty ureslovable:
+• what is the daily/monthly/yearly field?
+• what goes in the cause field? 
+'''
+
+'''
 Lists in round brackets inside
 <NA> to denote nulls
 
