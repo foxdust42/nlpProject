@@ -56,3 +56,78 @@ should temporal references like "Today" be resolved wrt. to the pub metadata or 
 • available_ages_of_the_deceased <(30,2)> -> ✓
 • accident_datetime_from_url <20231201 18:48> -> Pub date?; it is in the example, but that's not from the url
 '''
+
+def clean_text(raw_text : str) -> str:
+    """replaces odd unicode characters appearing in text with their more common counterparts
+
+    Args:
+        raw_text (str): raw text
+
+    Returns:
+        str: cleaned text
+    """
+    ## These look similar, but break literally everything
+    clean = raw_text.replace('–','-')   # 'En Dash' -> dash
+    clean = clean.replace('’', '\'')    # 'right single quotation mark' -> single quote mark/apostrophe
+    clean = clean.replace(' ', ' ')     # 'Non braking space' -> space
+    
+    return clean
+
+## load articles
+try:
+    csvfile = open('articles.csv', 'r', newline='')
+except OSError:
+    print("Failed to open file")
+    sys.exit(-1)
+
+input = csv.reader(csvfile, delimiter=';', quoting=csv.QUOTE_ALL, strict=True)
+
+try:
+    outfile = open('tagged_unchecked.csv', 'w', newline='')
+except OSError:
+    print("failed to open file")
+    csvfile.close()
+    sys.exit(-1)
+    
+output = csv.writer(outfile, delimiter=';', quoting=csv.QUOTE_ALL, strict=True)
+    
+try:
+    next(input) # skip title row
+    line = next(input)
+except StopIteration:
+    print("Empty file!")
+    csvfile.close()
+    outfile.close()
+    sys.exit(0)
+   
+i=0
+    
+while True:
+    ## load metadata, nothing fancy
+    # url, pub_meta, loc_meta, title, text
+    operating_text = clean_text(line[5])
+    operating_title = clean_text(line[3])
+    
+    article = artinf(line[0], line[1], line[2], operating_title, operating_text)
+    
+    
+    
+    #print(article.exportable())
+    
+    output.writerow(article.exportable())
+    
+    #for string in line:
+        #print(string)
+    try:
+        line = next(input)
+        i += 1
+        if i >=20: 
+            raise StopIteration
+    except StopIteration:
+        break
+        
+    
+csvfile.close()
+outfile.close()
+
+print("All is done")
