@@ -5,7 +5,7 @@ import sys
 
 ## This actually does the assigning
 ## The result of this code is passed to the correcter script for manual review
-
+## There is little point in working on this until I get answers 
 
 '''
 Lists in round brackets inside
