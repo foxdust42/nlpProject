@@ -6,15 +6,50 @@ class ArticleInfo:
     """Class for hadling article information
     """
     
+    loaded : bool = False
+    
     nullstring : str = "<NA>"
     
+    list_divisions = []
+    list_districts = []
+    list_subdistricts = []
+    
+    sub_to_distr = {}
+    distr_to_div = {}
+    
+    def __load_dicts(filename : str):
+        f = open(filename, "r")
+        line = f.readline()
+        curr_div : str = None
+        curr_distr : str = None
+        
+        while line != "":
+            if line == "######":
+                line = f.readline()
+                ArticleInfo.list_divisions.append(line)
+                curr_div = line
+                line = f.readline()
+            elif line == "------":
+                line = f.readline()
+                ArticleInfo.list_districts.append(line)
+                ArticleInfo.distr_to_div.update({line: curr_div})
+                curr_distr = line
+                line = f.readline()
+            else:
+                ArticleInfo.list_subdistricts.append(line)
+                ArticleInfo.sub_to_distr.update({line: curr_distr})
+            
+            line = f.readline()
+            
+    __load_dicts()
+            
     def __init__(self, url : str, pub_meta : str, loc_meta : str, title : str, raw_text : str) -> None:
         ## metadata
         self.url : str = url
         self.pub_meta : datetime = datetime.datetime.strptime(pub_meta, '%B %d, %Y, %I:%M %p')
         self.loc_meta : str = loc_meta
         self.title : str = title
-        self.raw_text : str= raw_text
+        self.raw_text : str = raw_text
         
         ## tags
         self.number_of_accidents_occured : int
@@ -85,3 +120,4 @@ class AccidentType(Enum):
     
 class VechicleType(Enum):
     pass
+
