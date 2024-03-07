@@ -2,7 +2,9 @@ import nltk
 import regex as re 
 import csv
 import sys
+import spacy
 
+import articleinfo
 from articleinfo import ArticleInfo as artinf
 
 ## This actually does the assigning
@@ -103,6 +105,8 @@ except StopIteration:
 i=0
     
 while True:
+    """the main program loop
+    """
     ## load metadata, nothing fancy
     # url, pub_meta, loc_meta, title, text
     operating_text = clean_text(line[5])
@@ -110,6 +114,23 @@ while True:
     
     article = artinf(line[0], line[1], line[2], operating_title, operating_text)
     
+    # static logic
+    
+    """
+        The url tells us whether somwthing is from bangladesh
+        .../category/Bangladesh/...
+        or not
+        .../category/World/...
+    """
+    
+    if re.search("^https:\/\/www\.unb\.com\/category\/[Bb]angladesh\/.*") is None:
+        article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.other
+        article.division_of_accident = articleinfo.Division.NA
+        article.district_of_accident = artinf.nullstring #TODO: enum
+        article.subdistrict_or_upazila_of_accident = artinf.nullstring # TODO: enum
+    else:
+        article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.Bangladesh        
+
     
     
     #print(article.exportable())

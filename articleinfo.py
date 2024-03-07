@@ -6,6 +6,8 @@ class ArticleInfo:
     """Class for hadling article information
     """
     
+    nullstring : str = "<NA>"
+    
     def __init__(self, url : str, pub_meta : str, loc_meta : str, title : str, raw_text : str) -> None:
         ## metadata
         self.url : str = url
