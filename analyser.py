@@ -4,12 +4,17 @@ import csv
 import sys
 import spacy
 
+from spacy import displacy
+
 import articleinfo
 from articleinfo import ArticleInfo as artinf
 
 ## This actually does the assigning
 ## The result of this code is passed to the correcter script for manual review
-## There is little point in working on this until I get answers 
+
+##
+#   -> https://spacy.io/usage
+##
 
 '''
 Absent answers the following assumptions are made:
@@ -75,6 +80,14 @@ def clean_text(raw_text : str) -> str:
     
     return clean
 
+## Test lists
+
+assert(len(artinf.list_divisions) == 8)
+assert(len(artinf.list_districts) == 64)
+assert(len(artinf.list_subdistricts) == 495)
+
+## end test
+
 ## load articles
 try:
     csvfile = open('articles.csv', 'r', newline='')
@@ -102,6 +115,15 @@ except StopIteration:
     outfile.close()
     sys.exit(0)
    
+
+## setup the language processor
+ 
+nlp = spacy.load("en_core_web_sm")
+
+
+
+
+
 i=0
     
 while True:
@@ -123,15 +145,24 @@ while True:
         .../category/World/...
     """
     
-    if re.search("^https:\/\/www\.unb\.com\/category\/[Bb]angladesh\/.*") is None:
+    
+    if re.search("^https:\/\/www\.unb\.com\/category\/[Bb]angladesh\/.*", article.url) is None:
         article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.other
-        article.division_of_accident = articleinfo.Division.NA
-        article.district_of_accident = artinf.nullstring #TODO: enum
-        article.subdistrict_or_upazila_of_accident = artinf.nullstring # TODO: enum
+        article.division_of_accident = artinf.nullstring
+        article.district_of_accident = artinf.nullstring
+        article.subdistrict_or_upazila_of_accident = artinf.nullstring
     else:
         article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.Bangladesh        
 
     
+    # natural language processing
+   
+    doc = nlp(article.raw_text)
+    
+    #displacy.serve(doc, style="ent", page=True)
+    
+    for ent in doc.ents:
+        print(ent.text, ent.label_)
     
     #print(article.exportable())
     
@@ -142,7 +173,7 @@ while True:
     try:
         line = next(input)
         i += 1
-        if i >=20: 
+        if i >=1: 
             raise StopIteration
     except StopIteration:
         break
