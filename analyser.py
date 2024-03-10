@@ -90,7 +90,7 @@ assert(len(artinf.list_subdistricts) == 495)
 
 ## load articles
 try:
-    csvfile = open('articles.csv', 'r', newline='')
+    csvfile = open('articles_test.csv', 'r', newline='')
 except OSError:
     print("Failed to open file")
     sys.exit(-1)
@@ -123,7 +123,7 @@ nlp = spacy.load("en_core_web_sm")
 
 
 
-
+date_fail : int = 0
 i=0
     
 while True:
@@ -159,6 +159,8 @@ while True:
     
     #displacy.serve(doc, style="ent", page=True)
     
+    print(article.url)
+    
     for ent in doc.ents:
         if ent.label_ == "DATE":
             print(ent.text, ent.label_)
@@ -176,8 +178,8 @@ while True:
             article.day_of_the_week_of_the_accident = wd
             break
     # If we're here and still haven't parsed the date, we look for expressions like "yesterday" or "last night", etc.
-    
     if article.day_of_the_week_of_the_accident == artinf.nullstring:
+        date_fail += 1
         print(f"Failed to parse weekday for article {i}")
     
     print (article.day_of_the_week_of_the_accident)
@@ -188,7 +190,7 @@ while True:
     article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.NA
     ## END TODO 
     
-    if i == 2:
+    if i == -1:
         sents = list(doc.sents)
         displacy.serve(sents, style="dep", page=True)
         
@@ -203,7 +205,7 @@ while True:
         print("======")
         line = next(input)
         i += 1
-        if i >=10: 
+        if i >=100: 
             raise StopIteration
     except StopIteration:
         break
@@ -211,5 +213,7 @@ while True:
     
 csvfile.close()
 outfile.close()
+
+print(f"failed to parse {date_fail} dates")
 
 print("All is done")

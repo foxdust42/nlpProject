@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Any, Iterable, Dict
 import datetime
+import regex as re
 
 class ArticleInfo:
     """Class for hadling article information
@@ -119,8 +120,12 @@ class VechicleType(Enum):
     pass
 
 def resolve_weekday_string(string : str) -> str:
-    if string.lower() in ["monday", "tuesday", "wendsday", "thursday", "friday", "saturday", "sunday"]:
-        return string
+    print("".join(["<", string.lower(), ">"]))
+    #if string.lower() in ["monday", "tuesday", "wendsday", "thursday", "friday", "saturday", "sunday"]:
+    m = re.match("(?<=( )|(^))(monday|tuesday|wendsday|thursday|friday|saturday|sunday)(?=( )|($))", string.lower())
+    if m is not None:
+        print(m.group(0))
+        return m.group(0).title()
     else:
         return ArticleInfo.nullstring
     
@@ -137,7 +142,7 @@ def resolve_weekday_date(string : str) -> str:
     except ValueError:
         date = None
         
-    print(f"Warning: invalid date format: in {string}")
+    print(f"Warning: invalid date format in: {string}")
     return ArticleInfo.nullstring
             
     

@@ -13,7 +13,7 @@ with open("urls.json", "r") as f:
 if d is None:
     raise IOError
 
-csvfile = open('articles.csv', 'w', newline='')
+csvfile = open('articles_test.csv', 'w', newline='')
 
 if csvfile is None:
     raise IOError
@@ -29,15 +29,9 @@ print("\a\n")
 for i in range(0, len(d)):
 
     #print(d[i])
-    #d[i] = "https://www.unb.com.bd/category/Bangladesh/5-killed-in-tangail-road-crash/61684"
+    #d[i] = "https://www.unb.com.bd/category/Bangladesh/vessel-with-11-lakh-litre-fuel-sinks-in-meghna-river/107112"
+    
     req = r.get(d[i])
-
-    #print(req.text)
-    #print('Resp =', req.status_code)
-
-    # parser = BangladeshAccidentScraper()
-
-    # parser.feed(req.text)
 
     soup = bs4.BeautifulSoup(req.text, 'html.parser')
 
@@ -71,15 +65,14 @@ for i in range(0, len(d)):
     
     garbage = text_html.__str__()
 
-    
+    #print(text_html.text)    
     children = text_html.findChildren(recursive=True)
     
     #print(text_html)
     #print(children)
     for child in children:
-        
-        #print(type(child.find("a")))
-        if child.find_all("a") is not None:
+        if len(child.find_all("a")) != 0:
+            #print(child.find_all("a"))
             a ="".join([t for t in child.contents if type(t)==bs4.element.NavigableString])
             #print(child)
             #print(a.__str__())
@@ -88,7 +81,7 @@ for i in range(0, len(d)):
                 #print("Hit!")
                 child.decompose()
             
-    #print(text_html.get_text())
+    #print(text_html.text)
     out.writerow([d[i], meta_publish, meta_location, title, garbage, text_html.text.strip()])
     print(i)
     #sys.exit(-1)
