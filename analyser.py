@@ -175,6 +175,8 @@ while True:
         if wd != artinf.nullstring:
             article.day_of_the_week_of_the_accident = wd
             break
+    # If we're here and still haven't parsed the date, we look for expressions like "yesterday" or "last night", etc.
+    
     if article.day_of_the_week_of_the_accident == artinf.nullstring:
         print(f"Failed to parse weekday for article {i}")
     
@@ -185,10 +187,11 @@ while True:
     article.number_of_accidents_occured = -1
     article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.NA
     ## END TODO 
-    #for ent in doc.ents:
-    #    print(ent.text, ent.label_)
     
-    #print(article.exportable())
+    if i == 2:
+        sents = list(doc.sents)
+        displacy.serve(sents, style="dep", page=True)
+        
     
     ## Write result and iterate
     
