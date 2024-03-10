@@ -1,4 +1,4 @@
-import nltk
+import warnings
 import regex as re 
 import csv
 import sys
@@ -139,13 +139,12 @@ while True:
     # static logic
     
     """
-        The url tells us whether somwthing is from bangladesh
+        The url tells us whether something is from bangladesh
         .../category/Bangladesh/...
         or not
         .../category/World/...
     """
-    
-    
+     
     if re.search("^https:\/\/www\.unb\.com\/category\/[Bb]angladesh\/.*", article.url) is None:
         article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.other
         article.division_of_accident = artinf.nullstring
@@ -153,7 +152,6 @@ while True:
         article.subdistrict_or_upazila_of_accident = artinf.nullstring
     else:
         article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.Bangladesh        
-
     
     # natural language processing
    
@@ -162,18 +160,47 @@ while True:
     #displacy.serve(doc, style="ent", page=True)
     
     for ent in doc.ents:
-        print(ent.text, ent.label_)
+        if ent.label_ == "DATE":
+            print(ent.text, ent.label_)
+   
+    ## weekday
+    gen = (ent for ent in doc.ents if ent.label_ == "DATE")
+    article.day_of_the_week_of_the_accident = artinf.nullstring
+    for ent in gen:
+        wd = articleinfo.resolve_weekday_string(ent.text)
+        if wd != artinf.nullstring:
+            article.day_of_the_week_of_the_accident = wd
+            break
+        wd = articleinfo.resolve_weekday_date(ent.text)
+        if wd != artinf.nullstring:
+            article.day_of_the_week_of_the_accident = wd
+            break
+    if article.day_of_the_week_of_the_accident == artinf.nullstring:
+        print(f"Failed to parse weekday for article {i}")
+    
+    print (article.day_of_the_week_of_the_accident)
+    
+    
+    ##TODO: parese properly
+    article.number_of_accidents_occured = -1
+    article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.NA
+    ## END TODO 
+    #for ent in doc.ents:
+    #    print(ent.text, ent.label_)
     
     #print(article.exportable())
+    
+    ## Write result and iterate
     
     output.writerow(article.exportable())
     
     #for string in line:
         #print(string)
     try:
+        print("======")
         line = next(input)
         i += 1
-        if i >=1: 
+        if i >=10: 
             raise StopIteration
     except StopIteration:
         break

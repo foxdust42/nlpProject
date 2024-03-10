@@ -60,7 +60,7 @@ class ArticleInfo:
         self.day_of_the_week_of_the_accident : Weekday = None
         self.exact_location_of_accident : str = None
         self.area_of_accident : str = None
-        self.division_of_accident : Division = None
+        self.division_of_accident : str = None
         self.district_of_accident : str  = None
         self.subdistrict_or_upazila_of_accident : str = None
         self.is_place_of_accident_highway_or_expressway_or_water_or_other : str #TODO: ??? ask ig
@@ -82,12 +82,17 @@ class ArticleInfo:
         Returns:
             Iterable[Any]: An array containg class information
         """
-        return [self.url, self.pub_meta, self.loc_meta, self.title, self.raw_text]
+        return [self.url, self.pub_meta, self.loc_meta, self.title, self.raw_text, self.number_of_accidents_occured, self.is_the_accident_data_yearly_monthly_or_daily,
+                self.day_of_the_week_of_the_accident]
 
 class AccidentData(Enum):
     D = "daily"
     M = "Monthly"
     Y = "Yearly"
+    NA = "<NA>"
+    
+    def __str__(self) -> str:
+        return self.value 
 
 class Weekday(Enum):
     MONDAY = "Monday"
@@ -98,17 +103,6 @@ class Weekday(Enum):
     SATURDAY = "Saturday"
     SUNDAY = "Sunday"
    
-class Division(Enum):
-    NA = 0
-    Barishal = 1
-    Chattogram = 2
-    Dhaka = 3
-    Khulna = 4
-    Rajshahi = 5
-    Rangpur = 6
-    Mymensingh = 7
-    Sylhet = 8
-    
 class is_bangladesh(Enum):
     other = 0
     Bangladesh = 1
@@ -124,3 +118,26 @@ class AccidentType(Enum):
 class VechicleType(Enum):
     pass
 
+def resolve_weekday_string(string : str) -> str:
+    if string.lower() in ["monday", "tuesday", "wendsday", "thursday", "friday", "saturday", "sunday"]:
+        return string
+    else:
+        return ArticleInfo.nullstring
+    
+def resolve_weekday_date(string : str) -> str:
+    date : datetime = None
+    try:
+        date = datetime.datetime.strptime(string, "%B %d, %Y")
+        return datetime.datetime.strftime(date, "%A")
+    except ValueError:
+        date = None
+    try:
+        date = datetime.datetime.strptime(string, "%d %m %Y")  
+        return datetime.datetime.strftime(date, "%A")
+    except ValueError:
+        date = None
+        
+    print(f"Warning: invalid date format: in {string}")
+    return ArticleInfo.nullstring
+            
+    
