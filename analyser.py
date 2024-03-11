@@ -153,19 +153,22 @@ while True:
     else:
         article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.Bangladesh        
     
-    # natural language processing
+    ### Natural language processing
    
     doc = nlp(article.raw_text)
     
     #displacy.serve(doc, style="ent", page=True)
     
-    print(article.url)
+    print(i, ":", article.url)
     
     for ent in doc.ents:
         if ent.label_ == "DATE":
             print(ent.text, ent.label_)
    
     ## weekday
+    '''
+    The pervailing assumption here is that, at least when it comes accident reports, the first valid DATE object generally describes the proper date
+    '''
     gen = (ent for ent in doc.ents if ent.label_ == "DATE")
     article.day_of_the_week_of_the_accident = artinf.nullstring
     for ent in gen:
@@ -177,8 +180,12 @@ while True:
         if wd != artinf.nullstring:
             article.day_of_the_week_of_the_accident = wd
             break
+        wd = articleinfo.resolve_temporal_reference(ent.text, article.pub_meta)
+        if wd != artinf.nullstring:
+            article.day_of_the_week_of_the_accident = wd
+            break
     # If we're here and still haven't parsed the date, we look for expressions like "yesterday" or "last night", etc.
-    if article.day_of_the_week_of_the_accident == artinf.nullstring:
+    if article.day_of_the_week_of_the_accident == artinf.nullstring or article.day_of_the_week_of_the_accident is None:
         date_fail += 1
         print(f"Failed to parse weekday for article {i}")
     
@@ -190,7 +197,7 @@ while True:
     article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.NA
     ## END TODO 
     
-    if i == -1:
+    if i == 88:
         sents = list(doc.sents)
         displacy.serve(sents, style="dep", page=True)
         

@@ -121,10 +121,9 @@ class VechicleType(Enum):
 
 def resolve_weekday_string(string : str) -> str:
     print("".join(["<", string.lower(), ">"]))
-    #if string.lower() in ["monday", "tuesday", "wendsday", "thursday", "friday", "saturday", "sunday"]:
-    m = re.match("(?<=( )|(^))(monday|tuesday|wendsday|thursday|friday|saturday|sunday)(?=( )|($))", string.lower())
+    #if string.lower() in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]:
+    m = re.search("(?<=( )|(^))(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?=( )|($))", string.lower())
     if m is not None:
-        print(m.group(0))
         return m.group(0).title()
     else:
         return ArticleInfo.nullstring
@@ -145,4 +144,16 @@ def resolve_weekday_date(string : str) -> str:
     print(f"Warning: invalid date format in: {string}")
     return ArticleInfo.nullstring
             
+def resolve_temporal_reference(string : str, date : datetime) -> str:
+    """parses temporal references like 'today' or 'yesterday'
     
+    Args:
+        string (str): reference to resolve
+        date (datetime): date to resolve against
+        
+    Returns:
+        str: resolved day of week or ArticleInfo.nullstring
+    """
+    if re.search("today", string) is not None:
+        return datetime.datetime.strftime(date, "%A")
+    return ArticleInfo.nullstring
