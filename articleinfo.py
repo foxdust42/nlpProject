@@ -2,7 +2,9 @@ from enum import Enum
 from typing import List, Any, Iterable, Dict
 import datetime
 import regex as re
-
+import spacy
+from spacy import tokens
+from word2number import w2n
 class ArticleInfo:
     """Class for hadling article information
     """
@@ -156,4 +158,56 @@ def resolve_temporal_reference(string : str, date : datetime) -> str:
     """
     if re.search("today", string) is not None:
         return datetime.datetime.strftime(date, "%A")
+    if re.search("yesterday|last (night|morning|afternoon)", string) is not None:
+        return datetime.datetime.strftime((date - datetime.timedelta(days=1)), "%A")
     return ArticleInfo.nullstring
+
+def parse_dead_and_injured(doc : tokens.Doc)-> tuple[int, int]:
+    """parses text for deaths and injuries
+
+    Args:
+        doc (tokens.Doc): spacy document object
+
+    Returns:
+        tuple[int, int]: tuple containing deaths and injuries, in that order
+    """
+    kill_count : int = 0
+    kill_flag : bool = False
+    wound_count : int = 0
+    wound_flag : bool = False
+    for chunk in doc.noun_chunks:
+        #print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
+        if chunk.root.head.lemma_ in ["kill", "die"]:
+            # print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
+            for ent in chunk.ents:
+                print("E:", ent.text, ent.label_)
+            for token in chunk.subtree:
+                if token.pos_ in "PROPN" or (token.tag_ == "NN" and token.dep_ == "nsubjpass"):
+                    kill_count += 1
+                if token.pos_ == "NUM":
+                    print(token.text, token.pos_, w2n.word_to_num(token.text))
+                    kill_count += w2n.word_to_num(token.text) 
+        if chunk.root.head.lemma_ in ["injure", "wound"]:
+            for token in chunk.subtree:
+                if token.pos_ == "PROPN":
+                    wound_count += 1
+                if token.pos_ == "NUM":
+                    print(token.text, token.pos_, w2n.word_to_num(token.text))
+                    wound_count += w2n.word_to_num(token.text) 
+        if chunk.root.head.lemma_ in ["sustain"]:
+            loc_f : bool = False
+            for token in chunk.root.head.subtree:
+                print(token.lemma_)
+                if token.lemma_ in ["wound", "injury"]:
+                    loc_f = True
+                    break;
+            if loc_f == False:
+                continue
+            for token in chunk.subtree:
+                if token.pos_ == "PROPN":
+                    wound_count += 1
+                if token.pos_ == "NUM":
+                    print(token.text, token.pos_, w2n.word_to_num(token.text))
+                    wound_count += w2n.word_to_num(token.text) 
+                    
+    return (kill_count, wound_count)

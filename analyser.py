@@ -3,6 +3,8 @@ import regex as re
 import csv
 import sys
 import spacy
+# thank you stack user akshaynagpal for making this
+from word2number import w2n
 
 from spacy import displacy
 
@@ -189,20 +191,46 @@ while True:
         date_fail += 1
         print(f"Failed to parse weekday for article {i}")
     
-    print (article.day_of_the_week_of_the_accident)
-    
+    print (article.day_of_the_week_of_the_accident) 
     
     ##TODO: parese properly
     article.number_of_accidents_occured = -1
     article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.NA
     ## END TODO 
     
-    if i == 88:
+    ## Count the dead and injured
+     
+    kill_count : int = -1
+    injury_count : int = -1
+    
+    print("------")
+    
+    (kill_count, injury_count) = articleinfo.parse_dead_and_injured(doc)
+
+    print("K/I:: ", kill_count, injury_count)
+    
+    if i == 3:
         sents = list(doc.sents)
         displacy.serve(sents, style="dep", page=True)
-        
-    
+
+    # for chunk in doc.noun_chunks:
+    #     print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
+    #     if chunk.root.head.lemma_ in ["kill", "die"]:
+    #         for token in chunk.subtree:
+    #             if token.pos_ == "PROPN":
+    #                 kill_count += 1
+    #             if token.pos_ == "NUM":
+    #                 print(token.text, token.pos_, w2n.word_to_num(token.text))
+    #                 kill_count += w2n.word_to_num(token.text) 
+    #     if chunk.root.head.lemma_ in ["injure", "wound"]:
+    #         for token in chunk.subtree:
+    #             if token.pos_ == "PROPN":
+    #                 kill_count += 1
+    #             if token.pos_ == "NUM":
+    #                 print(token.text, token.pos_, w2n.word_to_num(token.text))
+    #                 kill_count += w2n.word_to_num(token.text) 
     ## Write result and iterate
+
     
     output.writerow(article.exportable())
     
@@ -212,7 +240,7 @@ while True:
         print("======")
         line = next(input)
         i += 1
-        if i >=100: 
+        if i >=4: 
             raise StopIteration
     except StopIteration:
         break
