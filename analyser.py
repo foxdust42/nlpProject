@@ -3,6 +3,7 @@ import regex as re
 import csv
 import sys
 import spacy
+from spacy.tokenizer import Tokenizer
 # thank you stack user akshaynagpal for making this
 from word2number import w2n
 
@@ -24,7 +25,6 @@ Absent answers the following assumptions are made:
 • resolve relative time phrases (i.e. today, yesterday, etc.) wrt to post metadata
 • accident_datetime_from_url is just article metadata
 • vechicle primacy follows order of apperance in text
-• the "any_more_..." field is a list
 Currenty ureslovable:
 • what is the daily/monthly/yearly field?
 • what goes in the cause field? 
@@ -61,9 +61,9 @@ should temporal references like "Today" be resolved wrt. to the pub metadata or 
 • primary_vehicle_involved <autorickshaw> -> Which vechicle is primary? secondary?
 • secondary_vehicle_involved <truck> -> ↥
 • tertiary_vehicle_involved <NA> -> ↥
-• any_more_vehicles_involved <NA> -> List? also, ↥
+• any_more_vehicles_involved <NA> -> List of distinct categories 
 • available_ages_of_the_deceased <(30,2)> -> ✓
-• accident_datetime_from_url <20231201 18:48> -> Pub date?; it is in the example, but that's not from the url
+• accident_datetime_from_url <20231201 18:48> -> Pub date
 '''
 
 def clean_text(raw_text : str) -> str:
@@ -122,8 +122,12 @@ except StopIteration:
  
 nlp = spacy.load("en_core_web_sm")
 
+# punctuation fix from : https://stackoverflow.com/questions/72972526/split-on-multiple-punctuation-inside-a-word-using-spacy
+ 
+#def cust_tokenizer(nlp : spacy.language.Language):
+#    return Tokenizer(nlp.vocab, suffix_search=dot_re.search)
 
-
+#nlp.tokenizer = cust_tokenizer(nlp)
 
 date_fail : int = 0
 i=0
@@ -158,6 +162,8 @@ while True:
     ### Natural language processing
    
     doc = nlp(article.raw_text)
+    
+    
     
     #displacy.serve(doc, style="ent", page=True)
     
@@ -207,11 +213,21 @@ while True:
     
     (kill_count, injury_count) = articleinfo.parse_dead_and_injured(doc)
 
-    print("K/I:: ", kill_count, injury_count)
+    print("K/I ::", kill_count, injury_count)
     
-    if i == 3:
+    if i == 7:
+        for token in doc:
+            print(token.text)
+            if token.text == "Hospital":
+                print(token.dep_, token.head.text)
+            if token.text == ".":
+                print(token.dep_, token.head.text) 
+        #tok_exp = nlp.tokenizer.explain(article.raw_text)
+        #assert [t.text for t in doc if not t.is_space] == [t[1] for t in tok_exp]
+        #for t in tok_exp:
+        #    print(t[1], "\\t", t[0])
         sents = list(doc.sents)
-        displacy.serve(sents, style="dep", page=True)
+        displacy.serve(doc, style="dep", page=True, )
 
     # for chunk in doc.noun_chunks:
     #     print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
@@ -240,7 +256,7 @@ while True:
         print("======")
         line = next(input)
         i += 1
-        if i >=4: 
+        if i >= 8: 
             raise StopIteration
     except StopIteration:
         break

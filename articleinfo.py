@@ -77,8 +77,8 @@ class ArticleInfo:
         self.tertiary_vehicle_involved : VechicleType = None
         self.any_more_vehicles_involved : List[VechicleType] = None
         self.available_ages_of_the_deceased : List[int] = None
-        self.accident_datetime_from_url : datetime = None
-        
+        self.accident_datetime_from_url : datetime = None 
+    
     def exportable(self) -> Iterable[Any]:
         """returns class info in a format ready to export to a csv file
 
@@ -87,6 +87,10 @@ class ArticleInfo:
         """
         return [self.url, self.pub_meta, self.loc_meta, self.title, self.raw_text, self.number_of_accidents_occured, self.is_the_accident_data_yearly_monthly_or_daily,
                 self.day_of_the_week_of_the_accident]
+
+
+def artinfo_from_list(args : List[str]) -> ArticleInfo:
+    pass 
 
 class AccidentData(Enum):
     D = "daily"
@@ -178,36 +182,37 @@ def parse_dead_and_injured(doc : tokens.Doc)-> tuple[int, int]:
     for chunk in doc.noun_chunks:
         #print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
         if chunk.root.head.lemma_ in ["kill", "die"]:
-            # print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
-            for ent in chunk.ents:
-                print("E:", ent.text, ent.label_)
+            print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
+            #for ent in chunk.ents:
+            #    print("E:", ent.text, ent.label_)
             for token in chunk.subtree:
-                if token.pos_ in "PROPN" or (token.tag_ == "NN" and token.dep_ == "nsubjpass"):
+                print("T:", token.text)
+                if (token.pos_ in "PROPN" or token.tag_ == "NN") and token.dep_ in ["nsubjpass", "nsubj"]:
                     kill_count += 1
-                if token.pos_ == "NUM":
-                    print(token.text, token.pos_, w2n.word_to_num(token.text))
+                if token.pos_ == "NUM" and token.dep_ in ["nummod"]:
+                    # print(token.text, token.pos_, w2n.word_to_num(token.text))
                     kill_count += w2n.word_to_num(token.text) 
         if chunk.root.head.lemma_ in ["injure", "wound"]:
             for token in chunk.subtree:
-                if token.pos_ == "PROPN":
+                if token.pos_ == "PROPN" or (token.tag_ == "NN" and token.dep_ in ["nsubjpass", "nsubj"]):
                     wound_count += 1
-                if token.pos_ == "NUM":
-                    print(token.text, token.pos_, w2n.word_to_num(token.text))
+                if token.pos_ == "NUM" and token.dep_ in ["nummod"]:
+                    # print(token.text, token.pos_, w2n.word_to_num(token.text))
                     wound_count += w2n.word_to_num(token.text) 
         if chunk.root.head.lemma_ in ["sustain"]:
             loc_f : bool = False
             for token in chunk.root.head.subtree:
-                print(token.lemma_)
+                # print(token.lemma_)
                 if token.lemma_ in ["wound", "injury"]:
                     loc_f = True
                     break;
             if loc_f == False:
                 continue
             for token in chunk.subtree:
-                if token.pos_ == "PROPN":
+                if token.pos_ == "PROPN" or (token.tag_ == "NN" and token.dep_ in ["nsubjpass", "nsubj"]):
                     wound_count += 1
-                if token.pos_ == "NUM":
-                    print(token.text, token.pos_, w2n.word_to_num(token.text))
+                if token.pos_ == "NUM" and token.dep_ in ["nummod"]:
+                    #print(token.text, token.pos_, w2n.word_to_num(token.text))
                     wound_count += w2n.word_to_num(token.text) 
                     
     return (kill_count, wound_count)
