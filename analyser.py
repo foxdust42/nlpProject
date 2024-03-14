@@ -139,7 +139,7 @@ while True:
     # url, pub_meta, loc_meta, title, text
     operating_text = clean_text(line[5])
     operating_title = clean_text(line[3])
-    
+    print(line[1])
     article = artinf(line[0], line[1], line[2], operating_title, operating_text)
     
     # static logic
@@ -199,7 +199,7 @@ while True:
     
     print (article.day_of_the_week_of_the_accident) 
     
-    ##TODO: parese properly
+    ##TODO: the profs. will resolve this and send info via e-mail
     article.number_of_accidents_occured = -1
     article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.NA
     ## END TODO 
@@ -229,22 +229,6 @@ while True:
         sents = list(doc.sents)
         displacy.serve(doc, style="dep", page=True, )
 
-    # for chunk in doc.noun_chunks:
-    #     print(chunk.text, chunk.root.text, chunk.root.dep_, chunk.root.head.text, chunk.root.head.lemma_)
-    #     if chunk.root.head.lemma_ in ["kill", "die"]:
-    #         for token in chunk.subtree:
-    #             if token.pos_ == "PROPN":
-    #                 kill_count += 1
-    #             if token.pos_ == "NUM":
-    #                 print(token.text, token.pos_, w2n.word_to_num(token.text))
-    #                 kill_count += w2n.word_to_num(token.text) 
-    #     if chunk.root.head.lemma_ in ["injure", "wound"]:
-    #         for token in chunk.subtree:
-    #             if token.pos_ == "PROPN":
-    #                 kill_count += 1
-    #             if token.pos_ == "NUM":
-    #                 print(token.text, token.pos_, w2n.word_to_num(token.text))
-    #                 kill_count += w2n.word_to_num(token.text) 
     ## Write result and iterate
 
     

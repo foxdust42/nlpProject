@@ -9,14 +9,45 @@ from articleinfo import ArticleInfo
 
 ## this takes output from analyser and displays it for editing
 
+
+
+def init_meta(w : QWidget, r: QLayout):
+    for i in range(0,5):
+        cont = QWidget(w)
+        cont_l = QHBoxLayout(cont)
+        cont.setLayout(cont_l)
+        
+        label = QLabel(cont)
+    
+
 def init_right_textboxes(w : QWidget ,r : QLayout, l : List[QWidget]):
-    cont = QWidget(w)
-    cont_l = QHBoxLayout(cont)
-    cont.setLayout(cont_l)
-    
-    label = QLabel(cont)
-    
-    label.setText("Test")
+    generic_article = ArticleInfo("a", 'December 28, 2023, 03:06 am', "b", "c", "d")    
+    i=0
+    for field in vars(generic_article):
+        
+        cont = QWidget(w)
+        cont_l = QHBoxLayout(cont)
+        cont.setLayout(cont_l)
+
+        label = QLabel(cont)
+        label.setText(field)
+        
+        if i in [0,2,3,4,7,8,9,10,11,12,13]:
+            widget = QLineEdit(cont)
+        elif i in [1, 24]:
+            widget = QDateTimeEdit(cont)
+        elif i in [5, 16, 17]:
+            widget = QSpinBox(cont)
+        elif i in [6, 14, 15, 18, 19, 20, 21, 22, 23]:
+            continue
+        
+        cont_l.addWidget(label)
+        cont_l.addWidget(widget)
+        r.addWidget(cont)
+        
+        l += widget
+        
+        i += 1
     
     box = QLineEdit(cont)
     
@@ -53,6 +84,8 @@ if __name__ == '__main__':
     
     ml.addWidget(rightside, 1, 2, 2, 1)    
 
-    init_right_textboxes(w, rightside_l)
+    widgets : List[QWidget] = []
+    
+    init_right_textboxes(w, rightside_l, widgets)
     
     sys.exit(app.exec_())
