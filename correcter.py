@@ -61,13 +61,16 @@ class MWindow(QWidget):
             cont = QWidget(self)
             cont_l = QHBoxLayout(cont)
             cont.setLayout(cont_l)
-
+            
+            cont.setContentsMargins(0,0,0,0)
+            
             label = QLabel(cont)
             label.setText(field)
+            
+            
 
             if field in ["url", "loc_meta", "title",
                          "exact_location_of_accident", "area_of_accident", "is_place_of_accident_highway_or_expressway_or_water_or_other",
-                         "is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident",
                          "is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others"]:
                 widget = QLineEdit(cont)
             elif field in ["pub_meta", "accident_datetime_from_url"]:
@@ -114,19 +117,39 @@ class MWindow(QWidget):
                 item.setFlags(item.flags() | QtCore.Qt.ItemFlag.ItemIsEditable)
                 lw.addItem(item)
                 lw.setMaximumHeight( 50 )
+                lw.adjustSize()
                 widget =lw
-            elif field in ["primary_vehicle_involved", "secondary_vehicle_involved", "tertiary_vehicle_involved",
-                           "any_more_vehicles_involved", "available_ages_of_the_deceased"]:
+            elif field in ["primary_vehicle_involved", "secondary_vehicle_involved", "tertiary_vehicle_involved"]:
+                cb = QComboBox(cont)
+                cb.setEditable(True)
+                cb.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+                for val in articleinfo.VechicleType:
+                    cb.addItem(val.__str__())
+                widget = cb
+            elif field in ["is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident"]:
+                cb = QComboBox(cont)
+                cb.setEditable(True)
+                cb.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+                for val in articleinfo.AccidentType:
+                    cb.addItem(val.__str__())
+                widget = cb
+            elif field in ["any_more_vehicles_involved", "available_ages_of_the_deceased"]:
                 i += 1
                 continue
             else:
                 i += 1
                 continue
+           
+            
+            
             
             cont_l.addWidget(label)
             cont_l.addWidget(widget)
+            
+            cont_l.setSpacing(2)
+            
             r.addWidget(cont)
-
+            
             l.append(widget)
             n.append(field)
             
@@ -162,6 +185,9 @@ if __name__ == '__main__':
     rightside.setLayout(rightside_l)
     
     ml.addWidget(rightside, 1, 2, 2, 1)    
+
+    rightside_l.setSpacing(0)
+    rightside_l.setContentsMargins(0,0,0,0)
 
     widgets : List[QWidget] = []
     names : List[str] = []

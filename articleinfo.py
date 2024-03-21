@@ -89,7 +89,7 @@ class ArticleInfo:
         Returns:
             Iterable[Any]: An array containg class information
         """
-        return [self.url, self.pub_meta, self.loc_meta, self.title, self.raw_text,
+        return [self.url, self.pub_meta, self.loc_meta, self.title, self.raw_text, self.number_of_accidents_occured,
                 self.is_the_accident_data_yearly_monthly_or_daily, self.day_of_the_week_of_the_accident,
                 self.exact_location_of_accident, self.area_of_accident, self.division_of_accident,
                 self.district_of_accident, self.subdistrict_or_upazila_of_accident,
@@ -174,10 +174,27 @@ class AccidentData(Enum):
         return self.value 
 
 class AccidentType(Enum):
-    ROAD = "Road"
+    """Enum for different accident types
+
+    As some accidents are truly intermodal, an order must be established among them, that is:
+    
+    Plane >
+    Train >
+    Water >
+    Road  >
+    Other
+    
+    i.e.: if a train crashes into an oil tanker, then,
+    so long as the train was an operated vechicle as opposed to cargo,
+    the accident will be classified as a train accident.
+    
+    Likewise, a car driving into an oil tanker would be a water accident.
+    """
+    
     TRAIN = "Train"
-    PLANE = "Plane"
     WATER = "Waterway"
+    PLANE = "Plane"
+    ROAD = "Road"
     OTHER = "Other"
     NA = ArticleInfo.nullstring
     
@@ -205,7 +222,60 @@ class is_bangladesh(Enum):
         return self.value
     
 class VechicleType(Enum):
-    pass
+    Bus = "Bus"
+    Car = "Car"
+    Noah = "Noah"
+    Human_hauler  = "Human hauler"
+    Trolley = "Trolley"
+    Chander_Gari  = "Chander Gari"
+    Auto_Rickshaw = "Auto Rickshaw"
+    CNG = "CNG"
+    Easy_Bike = "Easy-bike"
+    Truck = "Truck"
+    Garbage_Truck  = "Garbage Truck"
+    Trailer = "Trailer"
+    Motorcycle = "Motorcycle"
+    Microbus = "Microbus"
+    Scooter = "Scooter"
+    Construction_vehicle = "Construction vehicle"
+    Bicycle = "Bicycle"
+    Ambulance = "Ambulance"
+    Pickup = "Pickup"
+    Lorry = "Lorry"
+    Paddy_Cutter_Vechicles = "Paddy cutter vehicles"
+    Bulkhead = "Bulkhead"
+    Crane = "Crane"
+    Wrecker = "Wrecker"
+    Tractor = "Tractor"
+    Cart = "Cart"
+    Leguna = "Leguna"
+    Nosimon = "Nosimon"
+    Three_Wheeler = "Three-Wheeler"
+    Four_Wheeler = "Four-Wheeler"
+    Votvoti = "Votvoti"
+    Kariman = "Kariman"
+    Mahindra = "Mahindra"
+    Van = "Van"
+    Rickshaw = "Rickshaw"
+    Boat = "Boat"
+    Trawler = "Trawler"
+    Vessel = "Vessel"
+    Launch = "Launch"
+    Tanker = "Tanker"
+    Oil_Tanker = "Oil Tanker"
+    Road_roller = "Road roller"
+    Power_Tiller = "Power Tiller"
+    Excavator = "Excavator"
+    Train = "Train"
+    Airplane = "Airplane"
+    Pedestrian = "Pedestrian"
+    Other = "Other"
+    NA = ArticleInfo.nullstring
+
+    def __str__(self) -> str:
+        return self.value
+        
+
 
 def resolve_weekday_string(string : str) -> str:
     print("".join(["<", string.lower(), ">"]))

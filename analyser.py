@@ -143,7 +143,7 @@ while True:
     operating_title = clean_text(line[3])
     print(line[1])
     article = artinf(line[0], line[1], line[2], operating_title, operating_text)
-    
+    article.accident_datetime_from_url = article.pub_meta
     # static logic
     
     """
@@ -153,7 +153,7 @@ while True:
         .../category/World/...
     """
      
-    if re.search("^https:\/\/www\.unb\.com\/category\/[Bb]angladesh\/.*", article.url) is None:
+    if re.search("\/category\/[Bb]angladesh\/", article.url) is None:
         article.is_country_bangladesh_or_other_country = articleinfo.is_bangladesh.other
         article.division_of_accident = artinf.nullstring
         article.district_of_accident = artinf.nullstring
@@ -259,7 +259,7 @@ while True:
         print("======")
         line = next(input)
         i += 1
-        if i >= 1: 
+        if i >= 20: 
             raise StopIteration
     except StopIteration:
         break
