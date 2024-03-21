@@ -131,6 +131,8 @@ nlp = spacy.load("en_core_web_sm")
 
 date_fail : int = 0
 i=0
+   
+output.writerow(artinf.title_row())
     
 while True:
     """the main program loop
@@ -176,6 +178,7 @@ while True:
     ## weekday
     '''
     The pervailing assumption here is that, at least when it comes accident reports, the first valid DATE object generally describes the proper date
+    This is not guaranteed obv.
     '''
     gen = (ent for ent in doc.ents if ent.label_ == "DATE")
     article.day_of_the_week_of_the_accident = artinf.nullstring
@@ -200,8 +203,8 @@ while True:
     print (article.day_of_the_week_of_the_accident) 
     
     ##TODO: the profs. will resolve this and send info via e-mail
-    article.number_of_accidents_occured = -1
-    article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.NA
+    article.number_of_accidents_occured = 1
+    article.is_the_accident_data_yearly_monthly_or_daily = articleinfo.AccidentData.D
     ## END TODO 
     
     ## Count the dead and injured
@@ -215,7 +218,24 @@ while True:
 
     print("K/I ::", kill_count, injury_count)
     
-    if i == 7:
+    article.total_number_of_people_killed = kill_count
+    article.total_number_of_people_injured = injury_count
+    
+    ## Admin. division
+    if article.is_country_bangladesh_or_other_country == articleinfo.is_bangladesh.Bangladesh:
+        for token in doc:
+            if token.text.title() in article.list_subdistricts:
+                article.subdistrict_or_upazila_of_accident = token.text.title()
+                article.district_of_accident = article.sub_to_distr[article.subdistrict_or_upazila_of_accident]
+                article.division_of_accident = article.distr_to_div[article.district_of_accident]
+                print(token.text, article.subdistrict_or_upazila_of_accident, article.district_of_accident, article.division_of_accident)       
+    if article.subdistrict_or_upazila_of_accident is None:
+        article.subdistrict_or_upazila_of_accident == article.nullstring
+        article.district_of_accident = article.nullstring
+        article.division_of_accident = article.nullstring 
+    
+    
+    if i == -1:
         for token in doc:
             print(token.text)
             if token.text == "Hospital":
@@ -231,7 +251,6 @@ while True:
 
     ## Write result and iterate
 
-    
     output.writerow(article.exportable())
     
     #for string in line:
@@ -240,7 +259,7 @@ while True:
         print("======")
         line = next(input)
         i += 1
-        if i >= 8: 
+        if i >= 1: 
             raise StopIteration
     except StopIteration:
         break

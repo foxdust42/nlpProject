@@ -52,7 +52,11 @@ class ArticleInfo:
     def __init__(self, url : str, pub_meta : str, loc_meta : str, title : str, raw_text : str) -> None:
         ## metadata
         self.url : str = url
-        self.pub_meta : datetime = datetime.datetime.strptime(pub_meta, '%B %d, %Y, %I:%M %p')
+        self.pub_meta : datetime = None
+        try:
+            self.pub_meta = datetime.datetime.strptime(pub_meta, '%B %d, %Y, %I:%M %p')
+        except ValueError:
+            pass
         self.loc_meta : str = loc_meta
         self.title : str = title
         self.raw_text : str = raw_text
@@ -60,18 +64,18 @@ class ArticleInfo:
         ## tags
         self.number_of_accidents_occured : int = None
         self.is_the_accident_data_yearly_monthly_or_daily : AccidentData = None
-        self.day_of_the_week_of_the_accident : Weekday = None
+        self.day_of_the_week_of_the_accident : str = None
         self.exact_location_of_accident : str = None
         self.area_of_accident : str = None
         self.division_of_accident : str = None
-        self.district_of_accident : str  = None
+        self.district_of_accident : str = None
         self.subdistrict_or_upazila_of_accident : str = None
-        self.is_place_of_accident_highway_or_expressway_or_water_or_other : str #TODO: ??? ask ig
+        self.is_place_of_accident_highway_or_expressway_or_water_or_other : str = None #TODO: ??? ask ig
         self.is_country_bangladesh_or_other_country : is_bangladesh= None
-        self.is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident : AccidentType
+        self.is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident : AccidentType = AccidentType.NA
         self.total_number_of_people_killed : int = None
         self.total_number_of_people_injured : int = None
-        self.is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others : None #TODO: god knows
+        self.is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others : str = None #TODO: god knows
         self.primary_vehicle_involved : VechicleType = None
         self.secondary_vehicle_involved : VechicleType = None
         self.tertiary_vehicle_involved : VechicleType = None
@@ -85,21 +89,100 @@ class ArticleInfo:
         Returns:
             Iterable[Any]: An array containg class information
         """
-        return [self.url, self.pub_meta, self.loc_meta, self.title, self.raw_text, self.number_of_accidents_occured, self.is_the_accident_data_yearly_monthly_or_daily,
-                self.day_of_the_week_of_the_accident]
+        return [self.url, self.pub_meta, self.loc_meta, self.title, self.raw_text,
+                self.is_the_accident_data_yearly_monthly_or_daily, self.day_of_the_week_of_the_accident,
+                self.exact_location_of_accident, self.area_of_accident, self.division_of_accident,
+                self.district_of_accident, self.subdistrict_or_upazila_of_accident,
+                self.is_place_of_accident_highway_or_expressway_or_water_or_other,
+                self.is_country_bangladesh_or_other_country, self.is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident,
+                self.total_number_of_people_killed, self.total_number_of_people_injured,
+                self.is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others,
+                self.primary_vehicle_involved, self.secondary_vehicle_involved, self.tertiary_vehicle_involved,
+                self.any_more_vehicles_involved, self.available_ages_of_the_deceased,
+                self.accident_datetime_from_url]
+    @classmethod 
+    def title_row(cls) -> Iterable[str]: 
+        return ["url",
+        "pub_meta",
+        "loc_meta",
+        "title",
+        "raw_text",
+        "number_of_accidents_occured",
+        "is_the_accident_data_yearly_monthly_or_daily",
+        "day_of_the_week_of_the_accident",
+        "exact_location_of_accident",
+        "area_of_accident",
+        "division_of_accident",
+        "district_of_accident",
+        "subdistrict_or_upazila_of_accident",
+        "is_place_of_accident_highway_or_expressway_or_water_or_other",
+        "is_country_bangladesh_or_other_country",
+        "is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident",
+        "total_number_of_people_killed",
+        "total_number_of_people_injured",
+        "is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others",
+        "primary_vehicle_involved",
+        "secondary_vehicle_involved",
+        "tertiary_vehicle_involved",
+        "any_more_vehicles_involved",
+        "available_ages_of_the_deceased",
+        "accident_datetime_from_url"]
 
+    def setdate(self, date : datetime.datetime):
+        self.pub_meta = date
+        
+
+def GenericArticle() -> ArticleInfo:
+    ga : ArticleInfo = ArticleInfo("https://example.com", "March 18, 2022, 03:03 PM", "Generic city", "Title", "<<<<<TEXT>>>>>")
+    if ga.pub_meta is None:
+        ga.setdate(datetime.datetime(2022, 2, 2, 11, 22))
+    
+ 
+    ga.number_of_accidents_occured = 1 
+    ga.is_the_accident_data_yearly_monthly_or_daily = AccidentData.D
+    ga.day_of_the_week_of_the_accident = "Monday"
+    ga.exact_location_of_accident = "Location"
+    ga.area_of_accident = "Generic Intersection"
+    ga.division_of_accident = "Div"
+    ga.district_of_accident = "Dis"
+    ga.subdistrict_or_upazila_of_accident = "Sub" 
+    ga.is_place_of_accident_highway_or_expressway_or_water_or_other = "Highway"
+    ga.is_country_bangladesh_or_other_country = is_bangladesh.Bangladesh
+    ga.is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident = "road" 
+    ga.total_number_of_people_killed = 2
+    ga.total_number_of_people_injured = 5
+    ga.is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others = "collision"
+    ga.primary_vehicle_involved = "Truck"
+    ga.secondary_vehicle_involved = "Pedestrian"
+    ga.tertiary_vehicle_involved = "Oil tanker"
+    ga.any_more_vehicles_involved = ["A", "B"]
+    ga.available_ages_of_the_deceased = [1, 2, 3]
+    ga.accident_datetime_from_url = ga.pub_meta
+    
+    return ga
 
 def artinfo_from_list(args : List[str]) -> ArticleInfo:
     pass 
 
 class AccidentData(Enum):
-    D = "daily"
+    D = "Daily"
     M = "Monthly"
     Y = "Yearly"
     NA = "<NA>"
     
     def __str__(self) -> str:
         return self.value 
+
+class AccidentType(Enum):
+    ROAD = "Road"
+    TRAIN = "Train"
+    PLANE = "Plane"
+    WATER = "Waterway"
+    OTHER = "Other"
+    NA = ArticleInfo.nullstring
+    
+    def __str__(self) -> str:
+        return self.value
 
 class Weekday(Enum):
     MONDAY = "Monday"
@@ -109,18 +192,17 @@ class Weekday(Enum):
     FRIDAY = "Friday"
     SATURDAY = "Saturday"
     SUNDAY = "Sunday"
+    NA = "<NA>"
+    
+    def __str__(self) -> str:
+        return self.value
    
 class is_bangladesh(Enum):
-    other = 0
-    Bangladesh = 1
+    other = "Ohter"
+    Bangladesh = "Bangladesh"
     
-class AccidentType(Enum):
-    NA = 0
-    Road = 1
-    Train = 2
-    Waterways = 3
-    Plane = 4
-    Ohter = 5
+    def __str__(self) -> str:
+        return self.value
     
 class VechicleType(Enum):
     pass
