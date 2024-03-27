@@ -150,7 +150,7 @@ while True:
         The url tells us whether something is from bangladesh
         .../category/Bangladesh/...
         or not
-        .../category/World/...
+        .../category/.*/...
     """
      
     if re.search("\/category\/[Bb]angladesh\/", article.url) is None:
@@ -228,8 +228,17 @@ while True:
                 article.subdistrict_or_upazila_of_accident = token.text.title()
                 article.district_of_accident = article.sub_to_distr[article.subdistrict_or_upazila_of_accident]
                 article.division_of_accident = article.distr_to_div[article.district_of_accident]
-                print(token.text, article.subdistrict_or_upazila_of_accident, article.district_of_accident, article.division_of_accident)       
-    if article.subdistrict_or_upazila_of_accident is None:
+                print(token.text, article.subdistrict_or_upazila_of_accident, article.district_of_accident, article.division_of_accident)  
+                break;     
+        if article.subdistrict_or_upazila_of_accident is  None:
+            for token in doc:
+                if token.text.title() in article.list_districts:
+                    article.district_of_accident = token.text.title()
+                    article.division_of_accident = article.distr_to_div[article.district_of_accident]
+                    article.subdistrict_or_upazila_of_accident = artinf.nullstring
+                    print(token.text, article.subdistrict_or_upazila_of_accident, article.district_of_accident, article.division_of_accident)  
+                    break;     
+    else:
         article.subdistrict_or_upazila_of_accident == article.nullstring
         article.district_of_accident = article.nullstring
         article.division_of_accident = article.nullstring 

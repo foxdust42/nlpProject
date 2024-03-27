@@ -172,21 +172,63 @@ class MWindow(QWidget):
             self.w_dict["day_of_the_week_of_the_accident"].setCurrentText(ArticleInfo.nullstring),
         else:
             self.w_dict["day_of_the_week_of_the_accident"].setCurrentIndex(tmp)
-             
-        self.w_dict["exact_location_of_accident"].text(),
-        self.w_dict["area_of_accident"].text(),
-        self.w_dict["division_of_accident"].currentText(),
-        self.w_dict["district_of_accident"].currentText(),
-        self.w_dict["subdistrict_or_upazila_of_accident"].currentText(),
-        self.w_dict["is_place_of_accident_highway_or_expressway_or_water_or_other"].text(),
-        self.w_dict["is_country_bangladesh_or_other_country"].text(),
-        self.w_dict["is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident"].currentText(),
-        self.w_dict["total_number_of_people_killed"].text(),
-        self.w_dict["total_number_of_people_injured"].text(),
-        self.w_dict["is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others"].text(),
-        self.w_dict["primary_vehicle_involved"].currentText(),
-        self.w_dict["secondary_vehicle_involved"].currentText(),
-        self.w_dict["tertiary_vehicle_involved"].currentText(),
+
+        self.w_dict["exact_location_of_accident"].setText(line[8]),
+        self.w_dict["area_of_accident"].setText(line[9]),
+        
+        tmp = self.w_dict["division_of_accident"].findText(line[10])
+        if tmp == -1:
+            self.w_dict["division_of_accident"].setCurrentText(ArticleInfo.nullstring),
+        else:
+            self.w_dict["division_of_accident"].setCurrentIndex(tmp)
+        
+        tmp = self.w_dict["district_of_accident"].findText(line[11])
+        if tmp == -1:
+            self.w_dict["district_of_accident"].setCurrentText(ArticleInfo.nullstring),
+        else:
+            self.w_dict["district_of_accident"].setCurrentIndex(tmp)
+
+        tmp = self.w_dict["subdistrict_or_upazila_of_accident"].findText(line[12])
+        if tmp == -1:
+            self.w_dict["subdistrict_or_upazila_of_accident"].setCurrentText(ArticleInfo.nullstring),
+        else:
+            self.w_dict["subdistrict_or_upazila_of_accident"].setCurrentIndex(tmp)
+
+        self.w_dict["is_place_of_accident_highway_or_expressway_or_water_or_other"].setText(line[13]),
+
+        if line[14] == "Bangladesh":
+            self.w_dict["is_country_bangladesh_or_other_country"].setChecked(True)
+        else:
+            self.w_dict["is_country_bangladesh_or_other_country"].setChecked(False)
+
+        tmp = self.w_dict["is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident"].findText(line[15])
+        if tmp == -1:
+            self.w_dict["is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident"].setCurrentText(ArticleInfo.nullstring),
+        else:
+            self.w_dict["is_type_of_accident_road_accident_or_train_accident_or_waterways_accident_or_plane_accident"].setCurrentIndex(tmp)
+
+        self.w_dict["total_number_of_people_killed"].setValue(int(line[16])),
+        self.w_dict["total_number_of_people_injured"].setValue(int(line[17])),
+        self.w_dict["is_reason_or_cause_for_the_accident_ploughed_or_ram_or_hit_or_collision_or_breakfail_or_others"].setText(line[18]),
+ 
+        tmp = self.w_dict["primary_vehicle_involved"]
+        if tmp.findText(line[19])== -1:
+            tmp.setCurrentText(ArticleInfo.nullstring),
+        else:
+            tmp.setCurrentIndex(tmp.findText(line[19]))
+
+        tmp = self.w_dict["secondary_vehicle_involved"]
+        if tmp.findText(line[19])== -1:
+            tmp.setCurrentText(ArticleInfo.nullstring),
+        else:
+            tmp.setCurrentIndex(tmp.findText(line[19]))
+        
+        tmp = self.w_dict["tertiary_vehicle_involved"]
+        if tmp.findText(line[19])== -1:
+            tmp.setCurrentText(ArticleInfo.nullstring),
+        else:
+            tmp.setCurrentIndex(tmp.findText(line[19]))
+
         self.extract_vechicles(), #self.w_dict["any_more_vehicles_involved"].text(),
         self.extract_ages(),#self.w_dict["available_ages_of_the_deceased"].text(),
         self.w_dict["accident_datetime_from_url"].text()
